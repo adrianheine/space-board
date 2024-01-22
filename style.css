@@ -1,0 +1,51 @@
+body {
+  margin: 0;
+}
+
+main {
+  display: grid;
+  min-block-size: 100dvh;
+  grid-template-areas:
+    "dashboard"
+    "sidebar";
+}
+aside {
+  background: #D04848;
+  grid-area: sidebar;
+}
+
+aside > nav {
+  display: flex;
+  justify-content: space-around;
+  flex-direction: column;
+  height: 100%;
+}
+
+article {
+  block-size: 100%;
+  background: #F3B95F;
+  grid-area: dashboard;
+}
+
+.dashboard {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.dashboard > li {
+  background-color: #6895D2;
+  margin: 1rem;
+}
+
+img {
+  inline-size: 100%;
+}
+
+@media (min-width: 50rem) {
+  main {
+    grid-template-areas: "sidebar dashboard";
+  }
+}
