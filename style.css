@@ -33,6 +33,9 @@ aside > nav > ul {
   transition: all 0.5s ease;
 }
 
+/*************
+ * Dashboard *
+ *************/
 article {
   block-size: 100%;
   background: #F3B95F;
@@ -47,16 +50,22 @@ article {
   padding: 0;
 }
 
-.dashboard > ul > li {
+.widget {
   background-color: #6895D2;
   margin: 1rem;
 }
 
-.dashboard > ul > li.active {
+.widget.active {
   animation: shake 1s;
 }
 
-img {
+.widget h2 {
+  background: #D04848;
+  margin: 0;
+  padding: 1rem;
+}
+
+.widget img {
   inline-size: 100%;
 }
 

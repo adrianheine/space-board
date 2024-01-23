@@ -15,7 +15,8 @@ const PolledImage = {
 
 const Widget = {
   props: ["name", "type", "spec", "isActive"],
-  template: `<li :class="{ active: isActive }">
+  template: `<li class="widget" :class="{ active: isActive }">
+    <h2>{{ name }}</h2>
     <PolledImage v-if="type == 'polled-image'" :base-src="spec.baseSrc" :interval="spec.interval" />
   </li>`,
 }
