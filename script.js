@@ -79,6 +79,7 @@ const Dashboard = {
       activeWidget: null,
       activeWidgetTimeout: null,
       maximized: null,
+      asideHover: false,
     }
   },
 
@@ -101,7 +102,7 @@ const Dashboard = {
   },
 
   template: `
-    <div class=dashboard :class="{ 'has-maximized': maximized !== null }">
+    <div class=dashboard :class="{ 'has-maximized': maximized !== null, 'aside-hover': asideHover }">
       <article class=main-area>
         <div class=color-background></div>
         <TransitionGroup name="list" tag="ul">
@@ -110,10 +111,10 @@ const Dashboard = {
           />
         </TransitionGroup>
       </article>
-      <aside>
+      <aside @mouseenter="asideHover=true" @mouseleave="asideHover=false">
         <nav>
           <TransitionGroup name="list" tag="ul">
-            <li v-for="widget in widgets" :key="widget.id"><a @click="sidebarClick(widget.id)">{{ widget.name }}</a></li>
+            <li v-for="widget in widgets" :key="widget.id" class="sidebar-item-container"><a class=sidebar-item @click="sidebarClick(widget.id)"><span>{{ widget.name }}</span></a></li>
           </TransitionGroup>
         </nav>
       </aside>

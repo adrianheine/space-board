@@ -31,10 +31,6 @@ aside > nav > ul {
   padding: 0;
 }
 
-aside > nav > ul > li {
-  align-self: end;
-}
-
 .list-move {
   transition: all 0.5s ease;
 }
@@ -112,11 +108,64 @@ aside > nav > ul > li {
   display: none;
 }
 
+.sidebar-item:hover {
+  text-decoration: underline;
+  text-shadow: 0 0 2px;
+}
+
 @media (min-width: 50rem) {
   .dashboard {
-    grid-template-columns: repeat(4, [col-start] minmax(0, 1fr));
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr);
     grid-template-areas: "sidebar dashboard dashboard dashboard";
     gap: 1rem;
+  }
+
+  .sidebar-item-container {
+    height: 100%;
+  }
+
+  .sidebar-item {
+    inline-size: 100%;
+    block-size: 100%;
+    font-size: 1.5rem;
+    font-family: monospace;
+    text-transform: uppercase;
+    box-sizing: border-box;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+  }
+
+  .sidebar-item span {
+    margin-inline: 0;
+    padding-inline: 0.5rem;
+  }
+
+  @media (hover: hover) {
+    .dashboard {
+      grid-template-columns: minmax(2rem, 0.1fr) minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr);
+      transition: grid-template-columns 0.2s ease;
+    }
+
+    .aside-hover, .has-maximized {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr);
+    }
+
+    /* This span is used to limit the text width while keeping the anchor at full width */
+    .sidebar-item span {
+      transition: inline-size 0.5s ease,
+      padding-inline 0.5s ease;
+      inline-size: 1rem; /* FIXME: This only works by accident */
+      margin-inline: auto;
+      padding-inline: 0;
+      overflow: hidden;
+    }
+
+    .aside-hover .sidebar-item span {
+      inline-size: 100%;
+      margin-inline: auto;
+      padding-inline: 0.5rem;
+    }
   }
 
   .dashboard .main-area {
