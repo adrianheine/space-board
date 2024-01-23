@@ -14,9 +14,12 @@ const PolledImage = {
 }
 
 const Widget = {
-  props: ["name", "type", "spec", "isActive"],
-  template: `<li class="widget" :class="{ active: isActive }">
+  props: ["name", "type", "spec", "isActive", "isMaximized"],
+  template: `<li class="widget" :class="{ active: isActive, maximized: isMaximized }">
+    <header>
     <h2>{{ name }}</h2>
+    <button class="toggle-maximize" @click="$emit('toggleMaximize')" title="Maximieren" />
+    </header>
     <PolledImage v-if="type == 'polled-image'" :base-src="spec.baseSrc" :interval="spec.interval" />
   </li>`,
 }
@@ -28,11 +31,16 @@ const Dashboard = {
       widgets: this.initialWidgets.map(w => ({id: w.name.toLowerCase(), ...w})),
       activeWidget: null,
       activeWidgetTimeout: null,
+      maximized: null,
     }
   },
 
   methods: {
-    click(id) {
+    toggleMaximize(id) {
+      this.maximized = this.maximized === id ? null : id
+    },
+
+    sidebarClick(id) {
       if (this.widgets[0].id === id) {
         this.activeWidget = id
         clearTimeout(this.activeWidgetTimeout)
@@ -46,18 +54,22 @@ const Dashboard = {
   },
 
   template: `
-    <article class=dashboard>
-      <TransitionGroup name="list" tag="ul">
-        <Widget v-for="widget in widgets" :key="widget.id" :name="widget.name" :type="widget.type" :spec="widget.spec" :is-active="activeWidget == widget.id" />
-      </TransitionGroup>
-    </article>
-    <aside>
-      <nav>
+    <div class=dashboard :class="{ 'has-maximized': maximized !== null }">
+      <article class=main-area>
         <TransitionGroup name="list" tag="ul">
-          <li v-for="widget in widgets" :key="widget.id"><a @click="click(widget.id)">{{ widget.name }}</a></li>
+          <Widget v-for="widget in widgets" :key="widget.id" :name="widget.name" :type="widget.type" :spec="widget.spec"
+            :is-active="activeWidget == widget.id" :is-maximized="maximized == widget.id" @toggleMaximize="toggleMaximize(widget.id)"
+          />
         </TransitionGroup>
-      </nav>
-    </aside>
+      </article>
+      <aside>
+        <nav>
+          <TransitionGroup name="list" tag="ul">
+            <li v-for="widget in widgets" :key="widget.id"><a @click="sidebarClick(widget.id)">{{ widget.name }}</a></li>
+          </TransitionGroup>
+        </nav>
+      </aside>
+    </div>
 `}
 
 createApp({
