@@ -7,8 +7,9 @@ main {
   display: grid;
   min-block-size: 100dvh;
   grid-template-areas:
+    "sidebar"
     "dashboard"
-    "sidebar";
+    ;
 }
 
 aside {
@@ -23,11 +24,14 @@ aside > nav {
 aside > nav > ul {
   display: flex;
   justify-content: space-around;
-  flex-direction: column;
+  flex-direction: row;
   height: 100%;
   list-style: none;
   margin: 0;
   padding: 0;
+}
+aside > nav > ul > li {
+  align-self: end;
 }
 
 .list-move {
@@ -89,6 +93,14 @@ article {
   .dashboard > ul {
     grid-template-columns: subgrid;
     grid-column: 1 / 6;
+  }
+
+  aside {
+    align-self: initial;
+  }
+
+  aside > nav > ul {
+    flex-direction: column;
   }
 }
 
