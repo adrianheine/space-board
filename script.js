@@ -93,7 +93,7 @@ const Dashboard = {
         clearTimeout(this.activeWidgetTimeout)
         this.activeWidgetTimeout = setTimeout(() => {
           this.activeWidget = null
-        }, 300)
+        }, 200)
       } else {
         this.widgets.splice(0, 0, ...this.widgets.splice(this.widgets.findIndex(w => w.id == id), 1))
       }
