@@ -80,19 +80,19 @@ article {
 
 @media (min-width: 50rem) {
   main {
-    grid-template-columns: repeat(6, [col-start] 1fr);
-    grid-template-areas: "sidebar dashboard dashboard dashboard dashboard dashboard";
+    grid-template-columns: repeat(4, [col-start] minmax(0, 1fr));
+    grid-template-areas: "sidebar dashboard dashboard dashboard";
     gap: 1rem;
   }
 
   .dashboard {
     grid-template-columns: subgrid;
-    grid-column: 2 / 7;
+    grid-column: 2 / 5;
   }
 
   .dashboard > ul {
     grid-template-columns: subgrid;
-    grid-column: 1 / 6;
+    grid-column: 1 / 4;
   }
 
   aside {
