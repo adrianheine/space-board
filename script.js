@@ -21,35 +21,40 @@ const Widget = {
 }
 
 const Dashboard = {
-  props: ["widgets"],
+  props: ["initialWidgets"],
   data() {
     return {
+      widgets: this.initialWidgets.map(w => ({id: w.name.toLowerCase(), ...w})),
       activeWidget: null,
       activeWidgetTimeout: null,
     }
   },
 
   methods: {
-    click(idx) {
-      this.activeWidget = idx
-      clearTimeout(this.activeWidgetTimeout)
-      this.activeWidgetTimeout = setTimeout(() => {
-        this.activeWidget = null
-      }, 300)
+    click(id) {
+      if (this.widgets[0].id === id) {
+        this.activeWidget = id
+        clearTimeout(this.activeWidgetTimeout)
+        this.activeWidgetTimeout = setTimeout(() => {
+          this.activeWidget = null
+        }, 300)
+      } else {
+        this.widgets.splice(0, 0, ...this.widgets.splice(this.widgets.findIndex(w => w.id == id), 1))
+      }
     }
   },
 
   template: `
-    <article>
-      <ul class=dashboard>
-        <Widget v-for="(widget, idx) in widgets" :name="widget.name" :type="widget.type" :spec="widget.spec" :is-active="activeWidget == idx" />
-      </ul>
+    <article class=dashboard>
+      <TransitionGroup name="list" tag="ul">
+        <Widget v-for="widget in widgets" :key="widget.id" :name="widget.name" :type="widget.type" :spec="widget.spec" :is-active="activeWidget == widget.id" />
+      </TransitionGroup>
     </article>
     <aside>
       <nav>
-        <ul>
-          <li v-for="(widget, idx) in widgets"><a @click="click(idx)">{{ widget.name }}</a></li>
-        </ul>
+        <TransitionGroup name="list" tag="ul">
+          <li v-for="widget in widgets" :key="widget.id"><a @click="click(widget.id)">{{ widget.name }}</a></li>
+        </TransitionGroup>
       </nav>
     </aside>
 `}

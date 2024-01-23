@@ -29,13 +29,17 @@ aside > nav > ul {
   padding: 0;
 }
 
+.list-move {
+  transition: all 0.5s ease;
+}
+
 article {
   block-size: 100%;
   background: #F3B95F;
   grid-area: dashboard;
 }
 
-.dashboard {
+.dashboard > ul {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   list-style: none;
@@ -43,12 +47,12 @@ article {
   padding: 0;
 }
 
-.dashboard > li {
+.dashboard > ul > li {
   background-color: #6895D2;
   margin: 1rem;
 }
 
-.dashboard > li.active {
+.dashboard > ul > li.active {
   animation: shake 1s;
 }
 
