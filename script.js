@@ -1,14 +1,22 @@
 import { createApp } from 'vue'
 
-const Image = {
-  props: ["src"],
+const PolledImage = {
+  props: ["baseSrc", "interval"],
+  data() {
+    return { src: this.baseSrc + '?t=' + Date.now() }
+  },
+  mounted() {
+    setTimeout(() => {
+      this.src = this.baseSrc + '?t=' + Date.now()
+    }, this.interval * 60 * 1000)
+  },
   template: `<img :src="src" />`
 }
 
 const Widget = {
   props: ["name", "type", "spec", "isActive"],
   template: `<li :class="{ active: isActive }">
-    <Image v-if="type == 'image'" :src="spec.src" />
+    <PolledImage v-if="type == 'polled-image'" :base-src="spec.baseSrc" :interval="spec.interval" />
   </li>`,
 }
 
@@ -52,12 +60,12 @@ createApp({
       widgets: [
         {name: "Wetter", type: "", spec: {}},
         {name: "Termine", type: "", spec: {}},
-        {name: "Webcam", type: "image", spec: {src: "https://cam.spacesquad.de/images/live.jpg"}},
+        {name: "Webcam", type: "polled-image", spec: {baseSrc: "https://cam.spacesquad.de/images/live.jpg", interval: 5}},
       ]
     }
   }
 })
 .component('Widget', Widget)
-.component('Image', Image)
+.component('PolledImage', PolledImage)
 .component('Dashboard', Dashboard)
 .mount('main')
