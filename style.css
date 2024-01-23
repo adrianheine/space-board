@@ -62,7 +62,7 @@ aside > nav > ul > li {
 
 .widget {
   background-color: #6895D2;
-  margin: 1rem;
+  margin-block-start: 1rem;
 }
 
 .widget.active {
@@ -125,6 +125,7 @@ aside > nav > ul > li {
   .dashboard .main-area > ul {
     grid-template-columns: subgrid;
     grid-column: 1 / 4;
+    margin: 0 1rem 1rem 0;
   }
 
   aside {
@@ -158,7 +159,6 @@ aside > nav > ul > li {
   .has-maximized .widget:not(.maximized) {
     grid-column: 1;
     background: #D04848;
-    margin: 0 0 1rem 0;
   }
 
   .has-maximized .maximized {
