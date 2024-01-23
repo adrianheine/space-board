@@ -1,36 +1,28 @@
 import { createApp } from 'vue'
 
-const Widget = {
-  inject: ["widgetName"],
-  props: ["name"],
-  template: `<li><slot /></li>`,
-  created() {
-    this.widgetName(this.name)
-  }
-}
-
 const Image = {
   props: ["src"],
-  template: `<img :src="{{ src }}" />`
+  template: `<img :src="src" />`
+}
+
+const Widget = {
+  props: ["name", "type", "spec"],
+  template: `<li>
+    <Image v-if="type == 'image'" :src="spec.src" />
+  </li>`,
 }
 
 const Dashboard = {
+  props: ["widgets"],
   data() {
     return {
-      widgets: [
-      ]
     }
-  },
-
-  provide() {
-    const self = this;
-    return { widgetName(name) { self.widgets.push({ name }) } }
   },
 
   template: `
     <article>
       <ul class=dashboard>
-        <slot />
+        <Widget v-for="widget in widgets" :name="widget.name" :type="widget.type" :spec="widget.spec" />
       </ul>
     </article>
     <aside>
@@ -40,7 +32,17 @@ const Dashboard = {
     </aside>
 `}
 
-createApp()
+createApp({
+  data() {
+    return {
+      widgets: [
+        {name: "Wetter", type: "", spec: {}},
+        {name: "Termine", type: "", spec: {}},
+        {name: "Webcam", type: "image", spec: {src: "https://cam.spacesquad.de/images/live.jpg"}},
+      ]
+    }
+  }
+})
 .component('Widget', Widget)
 .component('Image', Image)
 .component('Dashboard', Dashboard)
