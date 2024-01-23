@@ -45,9 +45,7 @@ aside > nav > ul > li {
 .dashboard .main-area {
   block-size: 100%;
   grid-area: dashboard;
-}
 
-.dashboard .main-area {
   display: grid;
   grid-template-columns: subgrid;
 }
@@ -110,6 +108,10 @@ aside > nav > ul > li {
   inline-size: 100%;
 }
 
+.color-background {
+  display: none;
+}
+
 @media (min-width: 50rem) {
   .dashboard {
     grid-template-columns: repeat(4, [col-start] minmax(0, 1fr));
@@ -140,10 +142,6 @@ aside > nav > ul > li {
     display: initial;
   }
 
-  .has-maximized.dashboard {
-    grid-template-areas: "dashboard";
-  }
-
   .has-maximized aside {
     display: none;
   }
@@ -154,16 +152,26 @@ aside > nav > ul > li {
 
   .has-maximized .main-area > ul {
     grid-column: 1 / 5;
+    background: transparent;
+    z-index: 1;
   }
 
   .has-maximized .widget:not(.maximized) {
-    grid-column: 1;
     background: #D04848;
   }
 
   .has-maximized .maximized {
     grid-column: 2 / 5;
     grid-row: 1 / 4; /* FIXME: Hardcoded widget count */
+  }
+
+  .has-maximized .color-background {
+    position: fixed;
+    height: 100dvh;
+    width: calc((100dvw - 3rem) / 4);
+    background: #D04848;
+    left: 0;
+    display: initial;
   }
 }
 
