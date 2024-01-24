@@ -1,4 +1,5 @@
 :root {
+  --textColor: black;
   --dashboardBg: black;
   --navColor: #D04848;
   --widgetColor: #F3B95F;
@@ -7,7 +8,7 @@
 body {
   margin: 0;
   font-family: monospace;
-
+  color: var(--textColor);
 }
 
 .dashboard {
@@ -65,8 +66,10 @@ aside > nav > ul {
 
 .widget {
   background-color: var(--widgetColor);
-  border: 1px solid var(--navColor);
+  border: 3px solid var(--navColor);
   margin-block-start: 1rem;
+  display: flex;
+  flex-direction: column;
 }
 
 .widget.active {
@@ -108,13 +111,43 @@ aside > nav > ul {
   background: url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2223%22 height=%2223%22 viewBox=%220 0 23 23%22%3E %3Cpath d=%22M19.65 0a.436.436 0 0 0-.282.125l-8.031 8L3.493.282C3.336.125 3.103.109 2.962.25L.274 2.938c-.14.141-.125.375.032.531l7.843 7.844-8.021 8.021c-.157.157-.172.422-.031.563l2.687 2.656c.141.141.375.126.532-.031l8.02-8.021 8.21 8.208c.156.157.39.173.531.032l2.688-2.688c.14-.14.125-.374-.032-.531l-8.209-8.209 8.032-8.031c.156-.157.172-.39.03-.531L19.9.094a.311.311 0 0 0-.25-.093z%22/%3E %3C/svg%3E")
 }
 
+.widget-body {
+  flex-grow: 1;
+}
+
 .widget img {
   inline-size: 100%;
 }
 
-.widget .weather {
+.widget iframe {
   border: 0;
   inline-size: 100%;
+}
+
+.widget footer {
+  display: block;
+  background-color: var(--navColor);
+  text-align: end;
+  padding-block: 0.3rem;
+  min-block-size: 1.1rem;
+}
+
+.widget footer a {
+  color: var(--textColor);
+}
+
+.widget footer a::after {
+  background: url("data:image/svg+xml,%3Csvg width='800px' height='800px' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'%3E%3Cg%3E%3Cpath fill='none' d='M0 0h24v24H0z'/%3E%3Cpath d='M10 6v2H5v11h11v-5h2v6a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h6zm11-3v8h-2V6.413l-7.793 7.794-1.414-1.414L17.585 5H13V3h8z'/%3E%3C/g%3E%3C/svg%3E") no-repeat; /* https://www.svgrepo.com/svg/346833/external-link */
+  background-size: contain;
+  content: '';
+  display: inline-block;
+  block-size: 1rem;
+  inline-size: 1rem;
+  vertical-align: bottom;
+}
+
+.widget footer a:hover {
+  text-decoration: underline;
 }
 
 .color-background {
@@ -189,6 +222,11 @@ aside > nav > ul {
       inline-size: 100%;
       margin-inline: auto;
       padding-inline: 0.5rem;
+    }
+
+    /* Don't underline links if UA can hover */
+    .widget footer a {
+      text-decoration: none;
     }
   }
 

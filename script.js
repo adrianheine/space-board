@@ -43,31 +43,28 @@ const OpenSenseMap = {
       this.error = err
     })
   },
-  computed: {
-    href() {
-      return `https://opensensemap.org/explore/${this.box}`
-    }
-  },
   template: `
   <ul v-if="sensors">
   <li v-for="sensor in sensors">{{ sensor }}</li>
   </ul>
   <p v-else-if="error">Fehler: {{ error }}</p>
   <p v-else>Daten werden geladen …</p>
-  <a :href>Sensor-Website</a>
   `
 }
 
 const Widget = {
-  props: ["name", "type", "spec", "isActive", "isMaximized"],
+  props: ["name", "type", "spec", "isActive", "isMaximized", "src"],
   template: `<li class="widget" :class="{ active: isActive, maximized: isMaximized }">
     <header>
     <h2>{{ name }}</h2>
     <button class="toggle-maximize" @click="$emit('toggleMaximize')" title="Maximieren" />
     </header>
-    <PolledImage v-if="type == 'polled-image'" :base-src="spec.baseSrc" :interval="spec.interval" />
-    <Weather v-if="type == 'weather'" :location="spec.location" />
-    <OpenSenseMap v-if="type == 'opensensemap'" :box="spec.box" />
+    <div class=widget-body>
+      <PolledImage v-if="type == 'polled-image'" :base-src="spec.baseSrc" :interval="spec.interval" />
+      <Weather v-if="type == 'weather'" :location="spec.location" />
+      <OpenSenseMap v-if="type == 'opensensemap'" :box="spec.box" />
+    </div>
+    <footer><a v-if=src :href=src>Quelle</a></footer>
   </li>`,
 }
 
@@ -106,7 +103,7 @@ const Dashboard = {
       <article class=main-area>
         <div class=color-background></div>
         <TransitionGroup name="list" tag="ul">
-          <Widget v-for="widget in widgets" :key="widget.id" :name="widget.name" :type="widget.type" :spec="widget.spec"
+          <Widget v-for="widget in widgets" :key="widget.id" :name="widget.name" :type="widget.type" :spec="widget.spec" :src="widget.src"
             :is-active="activeWidget == widget.id" :is-maximized="maximized == widget.id" @toggleMaximize="toggleMaximize(widget.id)"
           />
         </TransitionGroup>
@@ -125,10 +122,10 @@ createApp({
   data() {
     return {
       widgets: [
-        {name: "Wetter", type: "weather", spec: {location: "52.47,13.39"}},
+        {name: "Wetter", src: "https://wttr.in/52.47,13.39", type: "weather", spec: {location: "52.47,13.39"}},
         {name: "Termine", type: "", spec: {}},
-        {name: "Webcam", type: "polled-image", spec: {baseSrc: "https://cam.spacesquad.de/images/live.jpg", interval: 5}},
-        {name: "OpenSenseMap", type: "opensensemap", spec: {box: "5bf93ceba8af82001afc4c32"}},
+        {name: "Aussicht", src: "https://www.spacesquad.de/livecam/", type: "polled-image", spec: {baseSrc: "https://cam.spacesquad.de/images/live.jpg", interval: 5}},
+        {name: "Sensor", src: "https://opensensemap.org/explore/5bf93ceba8af82001afc4c32", type: "opensensemap", spec: {box: "5bf93ceba8af82001afc4c32"}},
       ]
     }
   }
