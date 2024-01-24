@@ -220,6 +220,7 @@ aside > nav > ul {
 .widget footer a {
   color: var(--textColor);
   cursor: pointer;
+  white-space: nowrap;
 }
 
 .widget footer .src::after {
