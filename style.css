@@ -254,7 +254,6 @@ aside > nav > ul {
 
     .sidebar-item:hover {
       text-decoration: underline;
-      text-shadow: 0 0 2px;
     }
 
     /* This span is used to limit the text width while keeping the anchor at full width */
