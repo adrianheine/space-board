@@ -1,51 +1,73 @@
 import { createApp } from 'vue'
 
 const PolledImage = {
+  expose: ["refresh"],
   props: ["baseSrc", "interval"],
   data() {
-    return { src: this.baseSrc + '?t=' + Date.now() }
+    return {
+      src: this.baseSrc + '?t=' + Date.now(),
+      refreshTimeout: null,
+    }
   },
   mounted() {
-    setTimeout(() => {
-      this.src = this.baseSrc + '?t=' + Date.now()
-    }, this.interval * 60 * 1000)
+    this.refreshTimeout = setTimeout(() => this.refresh(), this.interval * 60 * 1000)
+  },
+  methods: {
+    refresh() {
+      clearTimeout(this.refreshTimeout)
+      const lastRefreshed = Date.now()
+      this.src = this.baseSrc + '?t=' + lastRefreshed
+      this.$emit('refreshed', lastRefreshed)
+      this.refreshTimeout = setTimeout(() => this.refresh(), this.interval * 60 * 1000)
+      return lastRefreshed
+    }
   },
   template: `<img :src="src" />`
 }
 
 const Weather = {
+  expose: ["refresh"],
   props: ["location"],
   data() {
-    return {}
+    return { src: `https://wttr.in/${this.location}?0` }
   },
-  computed: {
-    src() {
-      return `https://wttr.in/${this.location}?0`
+  methods: {
+    refresh() {
+      const lastRefreshed = Date.now()
+      this.src = `https://wttr.in/${this.location}?0&time=` + lastRefreshed
+      return lastRefreshed
     }
   },
-  template: `<iframe :src class=weather />`
+  template: `<iframe :src class=weather ref=iframe />`
 }
 
 const OpenSenseMap = {
+  expose: ["refresh"],
   props: ["box"],
   data() {
     return { sensors: null, error: null }
   },
   created() {
-    fetch(`https://api.opensensemap.org/boxes/${this.box}/sensors`)
-    .then(response => response.json())
-    .then(({sensors}) => {
-      this.sensors = sensors.map(s => `${s.title}: ${s.lastMeasurement.value}${s.unit}`)
-      this.error = null
-    })
-    .catch(err => {
-      this.sensors = null
-      this.error = err
-    })
+    this.refresh()
+  },
+  methods: {
+    refresh() {
+      return fetch(`https://api.opensensemap.org/boxes/${this.box}/sensors`)
+      .then(response => response.json())
+      .then(({sensors}) => {
+        this.sensors = sensors.map(s => `${s.title}: ${s.lastMeasurement.value}${s.unit}`)
+        this.error = null
+      })
+      .catch(err => {
+        this.sensors = null
+        this.error = err
+      })
+      .then(() => Date.now())
+    },
   },
   template: `
   <ul v-if="sensors">
-  <li v-for="sensor in sensors">{{ sensor }}</li>
+    <li v-for="sensor in sensors">{{ sensor }}</li>
   </ul>
   <p v-else-if="error">Fehler: {{ error }}</p>
   <p v-else>Daten werden geladen …</p>
@@ -53,15 +75,23 @@ const OpenSenseMap = {
 }
 
 const Events = {
+  expose: ["refresh"],
   props: ["events"],
+  data() {
+    return { refTime: Date.now() }
+  },
   computed: {
     sortedEvents() {
       return this.events.toSorted(({date: a}, {date: b}) => a > b ? 1 : -1)
     }
   },
   methods: {
+    refresh() {
+      this.refTime = Date.now()
+      return this.refTime
+    },
     days_diff(date) {
-      const diff = (Date.parse(date) - Date.now()) / 1000 / 60 / 60
+      const diff = (Date.parse(date) - this.refTime) / 1000 / 60 / 60
       if (diff < -16) {
         return 'der Vergangenheit'
       } else if (diff < 18) {
@@ -81,18 +111,38 @@ const Events = {
 
 const Widget = {
   props: ["name", "type", "spec", "isActive", "isMaximized", "src"],
+  data() {
+    return { lastRefreshed: Date.now() }
+  },
+  methods: {
+    async refresh() {
+      this.lastRefreshed = await this.$refs.child.refresh()
+    },
+  },
+  computed: {
+    formattedTime() {
+      const date = new Date(this.lastRefreshed)
+      return date.toLocaleTimeString()
+    }
+  },
   template: `<li class="widget" :class="{ active: isActive, maximized: isMaximized }">
     <header>
     <h2>{{ name }}</h2>
     <button class="toggle-maximize" @click="$emit('toggleMaximize')" title="Maximieren" />
     </header>
     <div class=widget-body>
-      <PolledImage v-if="type == 'polled-image'" :base-src="spec.baseSrc" :interval="spec.interval" />
-      <Weather v-if="type == 'weather'" :location="spec.location" />
-      <OpenSenseMap v-if="type == 'opensensemap'" :box="spec.box" />
-      <Events v-if="type == 'events'" :events="spec.events" />
+      <PolledImage v-if="type == 'polled-image'" :base-src="spec.baseSrc" :interval="spec.interval" ref=child @refreshed="n => lastRefreshed = n" />
+      <Weather v-if="type == 'weather'" :location="spec.location" ref=child />
+      <OpenSenseMap v-if="type == 'opensensemap'" :box="spec.box" ref=child />
+      <Events v-if="type == 'events'" :events="spec.events" ref=child />
     </div>
-    <footer><a v-if=src :href=src>Quelle</a></footer>
+    <footer>
+      <span>
+      <a class=refresh @click=refresh>Neu laden</a>
+      (Stand: {{formattedTime}})
+      </span>
+      <a v-if=src :href=src class=src>Quelle</a>
+    </footer>
   </li>`,
 }
 
@@ -158,7 +208,7 @@ createApp({
           {date: '2024-05-25', name: 'Towel Day'},
           {date: '2024-05-04', name: 'Star Wars Day'},
         ]}},
-        {name: "Aussicht", src: "https://www.spacesquad.de/livecam/", type: "polled-image", spec: {baseSrc: "https://cam.spacesquad.de/images/live.jpg", interval: 5}},
+        {name: "Aussicht", src: "https://www.spacesquad.de/livecam/", type: "polled-image", spec: {baseSrc: "https://cam.spacesquad.de/images/live.jpg", interval: 2}},
         {name: "Sensor", src: "https://opensensemap.org/explore/5bf93ceba8af82001afc4c32", type: "opensensemap", spec: {box: "5bf93ceba8af82001afc4c32"}},
       ]
     }
