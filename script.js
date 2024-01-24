@@ -129,7 +129,6 @@ const Dashboard = {
   template: `
     <div class=dashboard :class="{ 'has-maximized': maximized !== null, 'aside-hover': asideHover }">
       <article class=main-area>
-        <div class=color-background></div>
         <TransitionGroup name="list" tag="ul">
           <Widget v-for="widget in widgets" :key="widget.id" :name="widget.name" :type="widget.type" :spec="widget.spec" :src="widget.src"
             :is-active="activeWidget == widget.id" :is-maximized="maximized == widget.id" @toggleMaximize="toggleMaximize(widget.id)"
