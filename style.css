@@ -3,6 +3,8 @@
   --dashboardBg: black;
   --navColor: #D04848;
   --widgetColor: #F3B95F;
+
+  --slimBorderWidth: 3px;
 }
 
 body {
@@ -66,8 +68,8 @@ aside > nav > ul {
 
 .widget {
   background-color: var(--widgetColor);
-  border: 3px solid var(--navColor);
-  margin-block-start: 1rem;
+  border: var(--slimBorderWidth) solid var(--navColor);
+  margin-block-start: var(--slimBorderWidth);
   display: flex;
   flex-direction: column;
 }
@@ -209,6 +211,10 @@ aside > nav > ul {
     grid-template-areas: "sidebar dashboard dashboard dashboard";
     grid-template-rows: 1fr;
     gap: 1rem;
+  }
+
+  .widget {
+    margin-block-start: 1rem;
   }
 
   .sidebar-item-container {
