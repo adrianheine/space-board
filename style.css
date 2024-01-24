@@ -124,6 +124,32 @@ aside > nav > ul {
   inline-size: 100%;
 }
 
+.widget-body time[datetime]:hover::after, time[datetime]:active::after, time[datetime]:focus::after {
+  content: "also " attr( datetime );
+  inset-block-start: 1.3rem;
+  background-color: var(--navColor);
+  z-index: 1;
+  inset-inline-start: 0;
+  opacity: 1;
+  padding: 0.3rem 0.5rem;
+  visibility: initial;
+}
+.widget-body time[datetime]::after {
+  visibility: hidden;
+  white-space: nowrap;
+  position: absolute;
+  content: "also " attr( datetime );
+  transition: opacity 0.5s steps(3, jump-end);
+  opacity: 0;
+}
+
+.widget-body time {
+  text-decoration: underline;
+  text-decoration-style: dotted;
+  position: relative;
+  font-size: 1rem;
+}
+
 .widget footer {
   display: block;
   background-color: var(--navColor);

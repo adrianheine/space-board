@@ -52,6 +52,33 @@ const OpenSenseMap = {
   `
 }
 
+const Events = {
+  props: ["events"],
+  computed: {
+    sortedEvents() {
+      return this.events.toSorted(({date: a}, {date: b}) => a > b ? 1 : -1)
+    }
+  },
+  methods: {
+    days_diff(date) {
+      const diff = (Date.parse(date) - Date.now()) / 1000 / 60 / 60
+      if (diff < -16) {
+        return 'der Vergangenheit'
+      } else if (diff < 18) {
+        return 'diesem Moment'
+      } else if (diff < 36) {
+        return 'einem Tag'
+      } else {
+        return Math.floor(diff / 24) + '&nbsp;Tagen'
+      }
+    }
+  },
+  template: `<ul v-if=events.length>
+    <li v-for="event in sortedEvents">{{event.name}} <time :datetime="event.date" tabindex=0>in <span v-html="days_diff(event.date)"/></time></li>
+  </ul>
+  <p v-else>Keine Termine eingetragen.</p>`
+}
+
 const Widget = {
   props: ["name", "type", "spec", "isActive", "isMaximized", "src"],
   template: `<li class="widget" :class="{ active: isActive, maximized: isMaximized }">
@@ -63,6 +90,7 @@ const Widget = {
       <PolledImage v-if="type == 'polled-image'" :base-src="spec.baseSrc" :interval="spec.interval" />
       <Weather v-if="type == 'weather'" :location="spec.location" />
       <OpenSenseMap v-if="type == 'opensensemap'" :box="spec.box" />
+      <Events v-if="type == 'events'" :events="spec.events" />
     </div>
     <footer><a v-if=src :href=src>Quelle</a></footer>
   </li>`,
@@ -123,7 +151,14 @@ createApp({
     return {
       widgets: [
         {name: "Wetter", src: "https://wttr.in/52.47,13.39", type: "weather", spec: {location: "52.47,13.39"}},
-        {name: "Termine", type: "", spec: {}},
+        {name: "Termine", type: "events", spec: {events: [
+          {date: '2024-03-08', name: 'Frauenkampftag'},
+          {date: new Date().toISOString().substr(0, 10), name: 'Heute'},
+          {date: '2024-05-08', name: 'Tag der Befreiung'},
+          {date: '2023-12-31', name: 'Silvester'},
+          {date: '2024-05-25', name: 'Towel Day'},
+          {date: '2024-05-04', name: 'Star Wars Day'},
+        ]}},
         {name: "Aussicht", src: "https://www.spacesquad.de/livecam/", type: "polled-image", spec: {baseSrc: "https://cam.spacesquad.de/images/live.jpg", interval: 5}},
         {name: "Sensor", src: "https://opensensemap.org/explore/5bf93ceba8af82001afc4c32", type: "opensensemap", spec: {box: "5bf93ceba8af82001afc4c32"}},
       ]
@@ -135,4 +170,5 @@ createApp({
 .component('Dashboard', Dashboard)
 .component('Weather', Weather)
 .component('OpenSenseMap', OpenSenseMap)
+.component('Events', Events)
 .mount('main')
