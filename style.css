@@ -5,6 +5,8 @@
   --widgetColor: #F3B95F;
 
   --slimBorderWidth: 3px;
+  --gridGapWidth: 1rem;
+  --headerFontSize: 1.5rem;
 }
 
 body {
@@ -83,12 +85,12 @@ aside > nav > ul {
   margin: 0;
   padding: 1rem;
   display: flex;
-  line-height: 1.5rem;
+  line-height: var(--headerFontSize);
   justify-content: space-between;
 }
 
 .widget header h2 {
-  font-size: 1.5rem;
+  font-size: var(--headerFontSize);
   font-weight: normal;
   text-transform: uppercase;
   margin: 0;
@@ -246,132 +248,196 @@ aside > nav > ul {
 }
 
 .sidebar-item {
-    font-size: 4dvw; /* Responsive typography, yeah */
+    font-size: clamp(0rem, 4dvw, var(--headerFontSize)); /* Responsive typography, yeah */
     text-decoration: underline;
     text-transform: uppercase;
     cursor: pointer;
 }
 
-@media (min-width: 50rem) {
+@media (min-width: 40rem) {
+  /* Two-column layout without sidebar */
   .dashboard {
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr);
-    grid-template-areas: "sidebar dashboard dashboard dashboard";
-    grid-template-rows: 1fr;
-    gap: 1rem;
-  }
-
-  .widget {
-    margin-block-start: 1rem;
-  }
-
-  .sidebar-item-container {
-    height: 100%;
-  }
-
-  .sidebar-item {
-    inline-size: 100%;
-    block-size: 100%;
-    font-size: 1.5rem;
-    box-sizing: border-box;
-    display: flex;
-    align-items: center;
-  }
-
-  .sidebar-item span {
-    margin-inline: 0;
-    padding-inline: 0.5rem;
-  }
-
-  @media (hover: hover) {
-    .dashboard {
-      grid-template-columns: minmax(2rem, 0.1fr) minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr);
-      transition: grid-template-columns 0.2s ease;
-    }
-
-    .aside-hover {
-      grid-template-columns: minmax(0, 0.5fr) minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr);
-    }
-
-    .has-maximized {
-      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr);
-    }
-
-    .sidebar-item {
-      text-decoration: none;
-    }
-
-    .sidebar-item:hover {
-      text-decoration: underline;
-    }
-
-    /* This span is used to limit the text width while keeping the anchor at full width */
-    .sidebar-item span {
-      transition: inline-size 0.5s ease,
-      padding-inline 0.5s ease;
-      inline-size: 1rem; /* FIXME: This only works by accident */
-      margin-inline: auto;
-      padding-inline: 0;
-      overflow: hidden;
-    }
-
-    .aside-hover .sidebar-item span {
-      inline-size: 100%;
-      margin-inline: auto;
-      padding-inline: 0.5rem;
-    }
-
-    /* Don't underline links if UA can hover */
-    .widget footer a {
-      text-decoration: none;
-    }
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    grid-template-areas: "sidebar sidebar"
+    "dashboard dashboard";
+    column-gap: var(--gridGapWidth); /* With a top navbar, widget margins take care of the row-gap */
   }
 
   .dashboard .main-area {
     grid-template-columns: subgrid;
-    grid-column: 2 / 5;
+    grid-column: 1 / 3;
   }
 
   .dashboard .main-area > ul {
     grid-template-columns: subgrid;
-    grid-column: 1 / 4;
-    margin: 0 1rem 1rem 0;
+    grid-column: 1 / 3;
   }
 
-  aside {
-    align-self: initial;
+  .widget {
+    margin-block-start: var(--gridGapWidth);
   }
 
-  aside > nav > ul {
-    flex-direction: column;
-  }
+  @media (min-width: 55rem) {
+    /* Three-column layout with sidebar */
+    .dashboard {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr);
+      grid-template-areas: "sidebar dashboard dashboard";
+      grid-template-rows: 1fr;
+      row-gap: var(--gridGapWidth);
+    }
 
-  .widget .toggle-maximize {
-    display: initial;
-  }
+    .dashboard .main-area {
+      grid-column: 2 / 4;
+    }
 
-  .has-maximized aside {
-    display: none;
-  }
+    .dashboard .main-area > ul {
+      margin: 0 var(--gridGapWidth) var(--gridGapWidth) 0;
+    }
 
-  .has-maximized .main-area {
-    grid-column: 1 / 5;
-  }
+    .sidebar-item-container {
+      height: 100%;
+    }
 
-  .has-maximized .main-area > ul {
-    grid-column: 1 / 5;
-    background: black;
-    z-index: 1;
-    margin-block-end: 0; /* Move to .maximized because we don't want it on the sidebar */
-  }
+    .sidebar-item {
+      inline-size: 100%;
+      block-size: 100%;
+      font-size: var(--headerFontSize);
+      box-sizing: border-box;
+      display: flex;
+      align-items: center;
+    }
 
-  .has-maximized .widget:not(.maximized) {
-    margin-block-start: var(--slimBorderWidth);
-  }
+    .sidebar-item span {
+      margin-inline: 0;
+      padding-inline: 0.5rem;
+    }
 
-  .has-maximized .maximized {
-    margin-block-end: 1rem; /* Moved from .main-area > ul */
-    grid-column: 2 / 5;
-    grid-row: 1 / 5; /* FIXME: Hardcoded widget count */
+    aside {
+      align-self: initial;
+    }
+
+    aside > nav > ul {
+      flex-direction: column;
+    }
+
+    /* Maximizing is only available with sidebar */
+    .widget .toggle-maximize {
+      display: initial;
+    }
+
+    .has-maximized aside {
+      display: none;
+    }
+
+    .has-maximized .main-area {
+      grid-column: 1 / 5;
+    }
+
+    .has-maximized .main-area > ul {
+      grid-column: 1 / 5;
+      background: black;
+      z-index: 1;
+      margin-block-end: 0; /* Move to .maximized because we don't want it on the sidebar */
+    }
+
+    .has-maximized .widget:not(.maximized) {
+      margin-block-start: var(--slimBorderWidth);
+    }
+
+    .has-maximized .maximized {
+      margin-block-end: 1rem; /* Moved from .main-area > ul */
+      grid-column: 2 / 5;
+      grid-row: 1 / 5; /* FIXME: Hardcoded widget count */
+    }
+
+    /* Add another column */
+    @media (min-width: 70rem) {
+      .dashboard {
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr);
+        grid-template-areas: "sidebar dashboard dashboard dashboard";
+      }
+
+      .dashboard .main-area {
+        grid-column: 2 / 5;
+      }
+
+      .dashboard .main-area > ul {
+        grid-column: 1 / 4;
+      }
+
+      .has-maximized .main-area {
+        grid-column: 1 / 5;
+      }
+
+      .has-maximized .main-area > ul {
+        grid-column: 1 / 5;
+      }
+
+      .has-maximized .maximized {
+        grid-column: 2 / 5;
+      }
+    }
+
+    @media (hover: hover) {
+      /* Three-column layout */
+      .dashboard {
+        grid-template-columns: minmax(2rem, 0.1fr) minmax(0, 1fr) minmax(0, 1fr);
+        transition: grid-template-columns 0.2s ease;
+      }
+
+      .aside-hover {
+        grid-template-columns: minmax(0, 0.5fr) minmax(0, 1fr) minmax(0, 1fr);
+      }
+
+      .has-maximized {
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr);
+      }
+
+      /* Four-column layout */
+      @media (min-width: 70rem) {
+        .dashboard {
+          grid-template-columns: minmax(2rem, 0.1fr) minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr);
+          transition: grid-template-columns 0.2s ease;
+        }
+
+        .aside-hover {
+          grid-template-columns: minmax(0, 0.5fr) minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr);
+        }
+
+        .has-maximized {
+          grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr);
+        }
+      }
+
+      .sidebar-item {
+        text-decoration: none;
+      }
+
+      .sidebar-item:hover {
+        text-decoration: underline;
+      }
+
+      /* This span is used to limit the text width while keeping the anchor at full width */
+      .sidebar-item span {
+        transition: inline-size 0.5s ease,
+        padding-inline 0.5s ease;
+        inline-size: 1rem; /* FIXME: This only works by accident */
+        margin-inline: auto;
+        padding-inline: 0;
+        overflow: hidden;
+      }
+
+      .aside-hover .sidebar-item span {
+        inline-size: 100%;
+        margin-inline: auto;
+        padding-inline: 0.5rem;
+      }
+
+      /* Don't underline links if UA can hover */
+      .widget footer a {
+        text-decoration: none;
+      }
+    }
   }
 }
 
