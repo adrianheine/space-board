@@ -203,6 +203,9 @@ aside > nav > ul {
 
 .sidebar-item {
     font-size: 4dvw; /* Responsive typography, yeah */
+    text-decoration: underline;
+    text-transform: uppercase;
+    cursor: pointer;
 }
 
 @media (min-width: 50rem) {
@@ -225,9 +228,7 @@ aside > nav > ul {
     inline-size: 100%;
     block-size: 100%;
     font-size: 1.5rem;
-    text-transform: uppercase;
     box-sizing: border-box;
-    cursor: pointer;
     display: flex;
     align-items: center;
   }
@@ -245,6 +246,10 @@ aside > nav > ul {
 
     .aside-hover, .has-maximized {
       grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr);
+    }
+
+    .sidebar-item {
+      text-decoration: none;
     }
 
     .sidebar-item:hover {
