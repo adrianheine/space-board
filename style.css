@@ -21,7 +21,7 @@ body {
     "sidebar"
     "dashboard"
     ;
-  grid-template-rows: 1.5rem 1fr;
+  grid-template-rows: 8dvw 1fr;
 }
 
 aside {
