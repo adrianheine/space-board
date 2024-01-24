@@ -115,13 +115,25 @@ aside > nav > ul {
   flex-grow: 1;
 }
 
-.widget img {
-  inline-size: 100%;
+.widget-body ul {
+  list-style-type: square;
+  padding-inline-start: 1.4rem;
+  margin: 1rem 1rem 1rem 0rem;
+  font-size: 1.2rem;
 }
 
-.widget iframe {
+.widget-body img,
+.widget-body iframe {
   border: 0;
   inline-size: 100%;
+  display: block;
+}
+.widget-body iframe {
+  block-size: 100%;
+}
+
+.widget-body p {
+  margin: 1rem;
 }
 
 .widget-body time[datetime]:hover::after, time[datetime]:active::after, time[datetime]:focus::after {
