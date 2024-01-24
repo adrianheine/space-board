@@ -109,6 +109,51 @@ const Events = {
   <p v-else>Keine Termine eingetragen.</p>`
 }
 
+const Clock = {
+  expose: ["refresh"],
+  props: [],
+  data() {
+    return {
+      time: new Date,
+      refreshTimeout: null,
+    }
+  },
+  mounted() {
+    this.newTimeout()
+  },
+  methods: {
+    newTimeout() {
+      // A somewhat gaussian number distribution
+      // from https://stackoverflow.com/a/39187274
+      function gaussianRand() {
+        let rand = 0
+        for (let i = 0; i < 6; i += 1) {
+          rand += Math.random()
+        }
+        return rand / 6
+      }
+
+      clearTimeout(this.refreshTimeout)
+      // A random timeout for a broken-looking clock
+      const timeout = Math.abs(gaussianRand() - 0.5) * 15 * 1000 + 1000
+      this.refreshTimeout = setTimeout(() => this.refresh(), timeout)
+    },
+    refresh() {
+      this.newTimeout()
+      this.time = new Date
+      this.$emit('refreshed', this.time.getTime())
+      return this.time.getTime()
+    }
+  },
+  template: `
+  <div class=fluid-container>
+    <Transition name=update-clock>
+      <p :key=time class=fluid-typography>{{ time.toLocaleTimeString() }}</p>
+    </Transition>
+  </div>
+  `
+}
+
 const Widget = {
   props: ["name", "type", "spec", "isActive", "isMaximized", "src"],
   data() {
@@ -135,6 +180,7 @@ const Widget = {
       <Weather v-if="type == 'weather'" :location="spec.location" ref=child />
       <OpenSenseMap v-if="type == 'opensensemap'" :box="spec.box" ref=child />
       <Events v-if="type == 'events'" :events="spec.events" ref=child />
+      <Clock v-if="type == 'clock'" ref=child @refreshed="n => lastRefreshed = n" />
     </div>
     <footer>
       <span>
@@ -199,6 +245,7 @@ createApp({
   data() {
     return {
       widgets: [
+        {name: "Zeit", type: "clock", spec: {}},
         {name: "Wetter", src: "https://wttr.in/52.47,13.39", type: "weather", spec: {location: "52.47,13.39"}},
         {name: "Termine", type: "events", spec: {events: [
           {date: '2024-03-08', name: 'Frauenkampftag'},
@@ -220,4 +267,5 @@ createApp({
 .component('Weather', Weather)
 .component('OpenSenseMap', OpenSenseMap)
 .component('Events', Events)
+.component('Clock', Clock)
 .mount('main')
