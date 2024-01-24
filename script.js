@@ -92,7 +92,7 @@ const Events = {
     },
     days_diff(date) {
       const diff = (Date.parse(date) - this.refTime) / 1000 / 60 / 60
-      if (diff < -16) {
+      if (diff < -24) {
         return 'der Vergangenheit'
       } else if (diff < 18) {
         return 'diesem Moment'
