@@ -421,7 +421,7 @@ aside > nav > ul {
       .sidebar-item span {
         transition: inline-size 0.5s ease,
         padding-inline 0.5s ease;
-        inline-size: 1rem; /* FIXME: This only works by accident */
+        inline-size: 1ch; /* This works because the font is monospace */
         margin-inline: auto;
         padding-inline: 0;
         overflow: hidden;
