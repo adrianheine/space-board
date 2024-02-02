@@ -17,7 +17,6 @@ const PolledImage = {
       clearTimeout(this.refreshTimeout)
       this.lastRefreshed = Date.now()
       this.refreshTimeout = setTimeout(() => this.refresh(), this.interval * 60 * 1000)
-      this.$emit('refreshed', this.lastRefreshed)
     }
   },
   computed: {
@@ -25,7 +24,7 @@ const PolledImage = {
       return `${this.baseSrc}?t=${this.lastRefreshed}`
     }
   },
-  template: `<img :src />`
+  template: `<img :src @load="$emit('refreshed', lastRefreshed)" @error="$emit('refreshed', lastRefreshed)" />`
 }
 
 const Weather = {
@@ -42,7 +41,6 @@ const Weather = {
   methods: {
     refresh() {
       this.lastRefreshed = Date.now()
-      this.$emit('refreshed', this.lastRefreshed)
     }
   },
   computed: {
@@ -50,7 +48,7 @@ const Weather = {
       return `https://wttr.in/${this.location}?0&time=${this.lastRefreshed}`
     }
   },
-  template: `<iframe :src class="weather" />`
+  template: `<iframe :src class="weather" @load="$emit('refreshed', lastRefreshed)" @error="$emit('refreshed', lastRefreshed)" />`
 }
 
 const OpenSenseMap = {
@@ -167,14 +165,16 @@ const Clock = {
 const Widget = {
   props: ["name", "type", "spec", "active", "maximized", "src"],
   data() {
-    return { lastRefreshed: Date.now() }
+    return { lastRefreshed: Date.now(), refreshing: false }
   },
   methods: {
     async refresh() {
-      await this.$refs.child.refresh()
+      this.refreshing = true;
+      this.$refs.child.refresh()
     },
     onRefreshed(n) {
       this.lastRefreshed = n
+      this.refreshing = false;
     }
   },
   computed: {
@@ -183,7 +183,7 @@ const Widget = {
       return date.toLocaleTimeString()
     }
   },
-  template: `<li class="widget" :class="{ active, maximized }">
+  template: `<li class="widget" :class="{ active, maximized, refreshing }">
     <header>
     <h2>{{ name }}</h2>
     <button class="toggle-maximize" @click="$emit('toggleMaximize')" title="Maximieren" />
