@@ -5,40 +5,52 @@ const PolledImage = {
   props: ["baseSrc", "interval"],
   data() {
     return {
-      src: this.baseSrc + '?t=' + Date.now(),
+      lastRefreshed: null,
       refreshTimeout: null,
     }
   },
   mounted() {
-    this.refreshTimeout = setTimeout(() => this.refresh(), this.interval * 60 * 1000)
+    this.refresh()
   },
   methods: {
     refresh() {
       clearTimeout(this.refreshTimeout)
-      const lastRefreshed = Date.now()
-      this.src = this.baseSrc + '?t=' + lastRefreshed
-      this.$emit('refreshed', lastRefreshed)
+      this.lastRefreshed = Date.now()
       this.refreshTimeout = setTimeout(() => this.refresh(), this.interval * 60 * 1000)
-      return lastRefreshed
+      this.$emit('refreshed', this.lastRefreshed)
     }
   },
-  template: `<img :src="src" />`
+  computed: {
+    src() {
+      return `${this.baseSrc}?t=${this.lastRefreshed}`
+    }
+  },
+  template: `<img :src />`
 }
 
 const Weather = {
   expose: ["refresh"],
   props: ["location"],
   data() {
-    return { src: `https://wttr.in/${this.location}?0` }
+    return {
+      lastRefreshed: null,
+    }
+  },
+  mounted() {
+    this.refresh()
   },
   methods: {
     refresh() {
-      const lastRefreshed = Date.now()
-      this.src = `https://wttr.in/${this.location}?0&time=` + lastRefreshed
-      return lastRefreshed
+      this.lastRefreshed = Date.now()
+      this.$emit('refreshed', this.lastRefreshed)
     }
   },
-  template: `<iframe :src class=weather ref=iframe />`
+  computed: {
+    src() {
+      return `https://wttr.in/${this.location}?0&time=${this.lastRefreshed}`
+    }
+  },
+  template: `<iframe :src class="weather" />`
 }
 
 const OpenSenseMap = {
@@ -51,23 +63,22 @@ const OpenSenseMap = {
     this.refresh()
   },
   methods: {
-    refresh() {
-      return fetch(`https://api.opensensemap.org/boxes/${this.box}/sensors`)
-      .then(response => response.json())
-      .then(({sensors}) => {
-        this.sensors = sensors.map(s => `${s.title}: ${s.lastMeasurement.value}${s.unit}`)
-        this.error = null
-      })
-      .catch(err => {
+    async refresh() {
+      try {
+        this.error = null // Reset error early to show loading message
+        const response = await fetch(`https://api.opensensemap.org/boxes/${this.box}/sensors`)
+        const {sensors} = await response.json()
+        this.sensors = sensors.map(({ title, lastMeasurement: { value }, unit}) => ({ title, value, unit }))
+      } catch (err) {
         this.sensors = null
         this.error = err
-      })
-      .then(() => Date.now())
+      }
+      this.$emit('refreshed', Date.now())
     },
   },
   template: `
   <ul v-if="sensors">
-    <li v-for="sensor in sensors">{{ sensor }}</li>
+    <li v-for="sensor in sensors">{{ sensor.title }}: {{ sensor.value }}{{ sensor.unit }}</li>
   </ul>
   <p v-else-if="error">Fehler: {{ error }}</p>
   <p v-else>Daten werden geladen …</p>
@@ -88,7 +99,7 @@ const Events = {
   methods: {
     refresh() {
       this.refTime = Date.now()
-      return this.refTime
+      this.$emit('refreshed', this.refTime)
     },
     days_diff(date) {
       const diff = (Date.parse(date) - this.refTime) / 1000 / 60 / 60
@@ -103,8 +114,8 @@ const Events = {
       }
     }
   },
-  template: `<ul v-if=events.length>
-    <li v-for="event in sortedEvents">{{event.name}} <time :datetime="event.date" tabindex=0>in <span v-html="days_diff(event.date)"/></time></li>
+  template: `<ul v-if="events.length">
+    <li v-for="event in sortedEvents">{{event.name}} <time :datetime="event.date" tabindex="0">in <span v-html="days_diff(event.date)"/></time></li>
   </ul>
   <p v-else>Keine Termine eingetragen.</p>`
 }
@@ -114,12 +125,12 @@ const Clock = {
   props: [],
   data() {
     return {
-      time: new Date,
+      time: null,
       refreshTimeout: null,
     }
   },
-  mounted() {
-    this.newTimeout()
+  created() {
+    this.refresh()
   },
   methods: {
     newTimeout() {
@@ -142,27 +153,29 @@ const Clock = {
       this.newTimeout()
       this.time = new Date
       this.$emit('refreshed', this.time.getTime())
-      return this.time.getTime()
     }
   },
   template: `
-  <div class=fluid-container>
-    <Transition name=update-clock>
-      <p :key=time class=fluid-typography>{{ time.toLocaleTimeString() }}</p>
+  <div class="fluid-container">
+    <Transition name="update-clock">
+      <p :key="time" class="fluid-typography">{{ time.toLocaleTimeString() }}</p>
     </Transition>
   </div>
   `
 }
 
 const Widget = {
-  props: ["name", "type", "spec", "isActive", "isMaximized", "src"],
+  props: ["name", "type", "spec", "active", "maximized", "src"],
   data() {
     return { lastRefreshed: Date.now() }
   },
   methods: {
     async refresh() {
-      this.lastRefreshed = await this.$refs.child.refresh()
+      await this.$refs.child.refresh()
     },
+    onRefreshed(n) {
+      this.lastRefreshed = n
+    }
   },
   computed: {
     formattedTime() {
@@ -170,24 +183,20 @@ const Widget = {
       return date.toLocaleTimeString()
     }
   },
-  template: `<li class="widget" :class="{ active: isActive, maximized: isMaximized }">
+  template: `<li class="widget" :class="{ active, maximized }">
     <header>
     <h2>{{ name }}</h2>
     <button class="toggle-maximize" @click="$emit('toggleMaximize')" title="Maximieren" />
     </header>
-    <div class=widget-body>
-      <PolledImage v-if="type == 'polled-image'" :base-src="spec.baseSrc" :interval="spec.interval" ref=child @refreshed="n => lastRefreshed = n" />
-      <Weather v-if="type == 'weather'" :location="spec.location" ref=child />
-      <OpenSenseMap v-if="type == 'opensensemap'" :box="spec.box" ref=child />
-      <Events v-if="type == 'events'" :events="spec.events" ref=child />
-      <Clock v-if="type == 'clock'" ref=child @refreshed="n => lastRefreshed = n" />
+    <div class="widget-body">
+      <component :is="type" v-bind="spec" ref="child" @refreshed="onRefreshed" />
     </div>
     <footer>
       <span>
-      <a class=refresh @click=refresh>Neu laden</a>
+      <a class="refresh" @click="refresh">Neu laden</a>
       (Stand: {{formattedTime}})
       </span>
-      <a v-if=src :href=src class=src>Quelle</a>
+      <a v-if="src" :href="src" class="src">Quelle</a>
     </footer>
   </li>`,
 }
@@ -223,18 +232,18 @@ const Dashboard = {
   },
 
   template: `
-    <div class=dashboard :class="{ 'has-maximized': maximized !== null, 'aside-hover': asideHover }">
-      <article class=main-area>
+    <div class="dashboard" :class="{ 'has-maximized': maximized !== null, 'aside-hover': asideHover }">
+      <article class="main-area">
         <TransitionGroup name="list" tag="ul">
-          <Widget v-for="widget in widgets" :key="widget.id" :name="widget.name" :type="widget.type" :spec="widget.spec" :src="widget.src"
-            :is-active="activeWidget == widget.id" :is-maximized="maximized == widget.id" @toggleMaximize="toggleMaximize(widget.id)"
+          <Widget v-for="widget in widgets" :key="widget.id" v-bind="widget"
+            :active="activeWidget == widget.id" :maximized="maximized == widget.id" @toggleMaximize="toggleMaximize(widget.id)"
           />
         </TransitionGroup>
       </article>
       <aside @mouseenter="asideHover=true" @mouseleave="asideHover=false">
         <nav>
           <TransitionGroup name="list" tag="ul">
-            <li v-for="widget in widgets" :key="widget.id" class="sidebar-item-container"><a class=sidebar-item @click="sidebarClick(widget.id)"><span>{{ widget.name }}</span></a></li>
+            <li v-for="widget in widgets" :key="widget.id" class="sidebar-item-container"><a class="sidebar-item" @click="sidebarClick(widget.id)"><span>{{ widget.name }}</span></a></li>
           </TransitionGroup>
         </nav>
       </aside>
@@ -245,9 +254,9 @@ createApp({
   data() {
     return {
       widgets: [
-        {name: "Zeit", type: "clock", spec: {}},
-        {name: "Wetter", src: "https://wttr.in/52.47,13.39", type: "weather", spec: {location: "52.47,13.39"}},
-        {name: "Termine", type: "events", spec: {events: [
+        {name: "Zeit", type: "Clock", spec: {}},
+        {name: "Wetter", src: "https://wttr.in/52.47,13.39", type: "Weather", spec: {location: "52.47,13.39"}},
+        {name: "Termine", type: "Events", spec: {events: [
           {date: '2024-03-08', name: 'Frauenkampftag'},
           {date: new Date().toISOString().substr(0, 10), name: 'Heute'},
           {date: '2024-05-08', name: 'Tag der Befreiung'},
@@ -255,8 +264,8 @@ createApp({
           {date: '2024-05-25', name: 'Towel Day'},
           {date: '2024-05-04', name: 'Star Wars Day'},
         ]}},
-        {name: "Aussicht", src: "https://www.spacesquad.de/livecam/", type: "polled-image", spec: {baseSrc: "https://cam.spacesquad.de/images/live.jpg", interval: 2}},
-        {name: "Sensor", src: "https://opensensemap.org/explore/5bf93ceba8af82001afc4c32", type: "opensensemap", spec: {box: "5bf93ceba8af82001afc4c32"}},
+        {name: "Aussicht", src: "https://www.spacesquad.de/livecam/", type: "PolledImage", spec: {baseSrc: "https://cam.spacesquad.de/images/live.jpg", interval: 2}},
+        {name: "Sensor", src: "https://opensensemap.org/explore/5bf93ceba8af82001afc4c32", type: "OpenSenseMap", spec: {box: "5bf93ceba8af82001afc4c32"}},
       ]
     }
   }
