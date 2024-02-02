@@ -177,7 +177,10 @@ aside > nav > ul {
 
 @container (inline-size > 0px) {
   .fluid-typography {
-    font-size: 15cqi; /* FIXME: This is completely arbitrary */
+    /* FIXME: This has enough space for 11 (HH:MM:SS AM) characters
+     * as long as letter ratios are < 100 / (11 * 11.4) = ~0.8
+     * which should cover most monospace fonts */
+    font-size: 11.4cqi;
     position: absolute; /* During transition there will be two of these */
   }
 }
