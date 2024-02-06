@@ -12,6 +12,9 @@ const PolledImage = {
   mounted() {
     this.refresh()
   },
+  unmounted() {
+    clearTimeout(this.refreshTimeout)
+  },
   methods: {
     refresh() {
       clearTimeout(this.refreshTimeout)
@@ -55,19 +58,25 @@ const OpenSenseMap = {
   expose: ["refresh"],
   props: ["box"],
   data() {
-    return { sensors: null, error: null }
+    return { sensors: null, error: null, abort: new AbortController }
   },
   created() {
     this.refresh()
   },
+  unmounted() {
+    this.abort.abort()
+  },
   methods: {
     async refresh() {
       try {
+        this.abort.abort()
+        this.abort = new AbortController;
         this.error = null // Reset error early to show loading message
-        const response = await fetch(`https://api.opensensemap.org/boxes/${this.box}/sensors`)
+        const response = await fetch(`https://api.opensensemap.org/boxes/${this.box}/sensors`,  { signal: this.abort.signal })
         const {sensors} = await response.json()
         this.sensors = sensors.map(({ title, lastMeasurement: { value }, unit}) => ({ title, value, unit }))
       } catch (err) {
+        if (err.name === 'AbortError') { console.log('aborted'); return; }
         this.sensors = null
         this.error = err
       }
@@ -129,6 +138,9 @@ const Clock = {
   },
   created() {
     this.refresh()
+  },
+  unmounted() {
+    clearTimeout(this.refreshTimeout)
   },
   methods: {
     newTimeout() {
