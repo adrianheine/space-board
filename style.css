@@ -278,7 +278,7 @@ aside > nav > ul {
 }
 
 .sidebar-item {
-    font-size: clamp(0rem, 4dvw, var(--headerFontSize)); /* Responsive typography, yeah */
+    font-size: clamp(0.5rem, 0.389rem + 2.778vw, var(--headerFontSize)); /* Responsive typography, yeah */
     text-decoration: underline;
     text-transform: uppercase;
     cursor: pointer;
