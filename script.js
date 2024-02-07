@@ -245,13 +245,13 @@ const Dashboard = {
 
   template: `
     <div class="dashboard" :class="{ 'has-maximized': maximized !== null, 'aside-hover': asideHover }">
-      <article class="main-area">
+      <main class="main-area">
         <TransitionGroup name="list" tag="ul">
           <Widget v-for="widget in widgets" :key="widget.id" v-bind="widget"
             :active="activeWidget == widget.id" :maximized="maximized == widget.id" @toggleMaximize="toggleMaximize(widget.id)"
           />
         </TransitionGroup>
-      </article>
+      </main>
       <aside @mouseenter="asideHover=true" @mouseleave="asideHover=false">
         <nav>
           <TransitionGroup name="list" tag="ul">
@@ -289,4 +289,4 @@ createApp({
 .component('OpenSenseMap', OpenSenseMap)
 .component('Events', Events)
 .component('Clock', Clock)
-.mount('main')
+.mount('#root')
