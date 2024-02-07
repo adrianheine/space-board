@@ -198,7 +198,7 @@ const Widget = {
   template: `<li class="widget" :class="{ active, maximized, refreshing }">
     <header>
     <h2>{{ name }}</h2>
-    <button class="toggle-maximize" @click="$emit('toggleMaximize')" title="Maximieren" />
+    <button class="toggle-maximize" @click="$emit('toggleMaximize')">Maximieren</button>
     </header>
     <div class="widget-body">
       <component :is="type" v-bind="spec" ref="child" @refreshed="onRefreshed" />
