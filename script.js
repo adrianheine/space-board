@@ -122,7 +122,7 @@ const Events = {
     }
   },
   template: `<ul v-if="events.length">
-    <li v-for="event in sortedEvents">{{event.name}} <time :datetime="event.date" tabindex="0">in <span v-html="days_diff(event.date)"/></time></li>
+    <li v-for="event in sortedEvents">{{event.name}} <time :datetime="event.date" tabindex="0">(in <span v-html="days_diff(event.date)"/>)</time></li>
   </ul>
   <p v-else>Keine Termine eingetragen.</p>`
 }
