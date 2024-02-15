@@ -122,7 +122,7 @@ const Events = {
     }
   },
   template: `<ul v-if="events.length">
-    <li v-for="event in sortedEvents">{{event.name}} <time :datetime="event.date" tabindex="0">(in <span v-html="days_diff(event.date)"/>)</time></li>
+    <li v-for="event in sortedEvents">{{event.name}} <small>(<time :datetime="event.date" tabindex="0">in <span v-html="days_diff(event.date)"/></time>)</small></li>
   </ul>
   <p v-else>Keine Termine eingetragen.</p>`
 }
@@ -166,16 +166,18 @@ const Clock = {
     }
   },
   template: `
-  <div class="fluid-container">
-    <Transition name="update-clock">
-      <p :key="time" class="fluid-typography">{{ time.toLocaleTimeString() }}</p>
-    </Transition>
+  <div class="fluid-typography-11 take-all-space">
+    <div class="center-both take-all-space">
+      <Transition name="fluttering">
+        <p :key="time" class="fluttering">{{ time.toLocaleTimeString() }}</p>
+      </Transition>
+    </div>
   </div>
   `
 }
 
 const Widget = {
-  props: ["name", "type", "spec", "active", "maximized", "src"],
+  props: ["name", "type", "spec", "shake", "maximized", "src"],
   data() {
     return { lastRefreshed: Date.now(), refreshing: false }
   },
@@ -195,18 +197,17 @@ const Widget = {
       return date.toLocaleTimeString()
     }
   },
-  template: `<li class="widget" :class="{ active, maximized, refreshing }">
-    <header>
-    <h2>{{ name }}</h2>
-    <button class="toggle-maximize" @click="$emit('toggleMaximize')">Maximieren</button>
+  template: `<li class="widget stack maximizable" :class="{ shake, maximized, refreshing }">
+    <header class="justify-items">
+    <h1>{{ name }}</h1>
+    <button class="icon-button" :class="{ maximize: !maximized, unmaximize: maximized }" @click="$emit('toggleMaximize')">Maximieren</button>
     </header>
     <div class="widget-body">
       <component :is="type" v-bind="spec" ref="child" @refreshed="onRefreshed" />
     </div>
-    <footer>
+    <footer class="justify-items">
       <span>
-      <a class="refresh" @click="refresh">Neu laden</a>
-      (Stand: {{formattedTime}})
+      <button class="refresh icon-button" @click="refresh">Neu laden</button>Stand: {{formattedTime}}
       </span>
       <a v-if="src" :href="src" class="src">Quelle</a>
     </footer>
@@ -244,18 +245,19 @@ const Dashboard = {
   },
 
   template: `
-    <div class="dashboard" :class="{ 'has-maximized': maximized !== null, 'aside-hover': asideHover }">
-      <main class="main-area">
-        <TransitionGroup name="list" tag="ul">
+    <div class="with-aside" :class="{ 'has-maximized': maximized !== null, 'aside-hover': asideHover }">
+      <div class="spacer" />
+      <main class="main">
+        <TransitionGroup name="smooth" tag="ul" class="grid dashboard" role="list">
           <Widget v-for="widget in widgets" :key="widget.id" v-bind="widget"
-            :active="activeWidget == widget.id" :maximized="maximized == widget.id" @toggleMaximize="toggleMaximize(widget.id)"
+            :shake="activeWidget == widget.id" :maximized="maximized == widget.id" @toggleMaximize="toggleMaximize(widget.id)"
           />
         </TransitionGroup>
       </main>
-      <aside @mouseenter="asideHover=true" @mouseleave="asideHover=false">
-        <nav>
-          <TransitionGroup name="list" tag="ul">
-            <li v-for="widget in widgets" :key="widget.id" class="sidebar-item-container"><a class="sidebar-item" @click="sidebarClick(widget.id)"><span>{{ widget.name }}</span></a></li>
+      <aside class="sidebar shy-container" @mouseenter="asideHover=true" @mouseleave="asideHover=false">
+        <nav class="nav-bar">
+          <TransitionGroup name="smooth" tag="ul" role="list">
+            <li v-for="widget in widgets" :key="widget.id" class="sidebar-item-container shy"><a class="sidebar-item" @click.prevent="sidebarClick(widget.id)" :href="'#' + widget.id">{{ widget.name }}</a></li>
           </TransitionGroup>
         </nav>
       </aside>

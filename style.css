@@ -1,195 +1,141 @@
+/* Adapted from A (more) Modern CSS Reset from https://piccalil.li/blog/a-more-modern-css-reset/ */
+
+/* Box sizing rules */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+/* Prevent font size inflation */
+html {
+  -moz-text-size-adjust: none;
+  -webkit-text-size-adjust: none;
+  text-size-adjust: none;
+}
+
+/* Remove default margin in favour of better control in authored CSS */
+body, h1, h2, h3, h4, p,
+figure, blockquote, dl, dd {
+  margin-block: 0;
+}
+
+/* Remove list styles on ul, ol elements with a list role, which suggests default styling will be removed */
+ul[role='list'],
+ol[role='list'] {
+  list-style: none;
+}
+
+/* Set core body defaults */
+body {
+  line-height: 1.5;
+}
+
+/* Set shorter line heights on headings and interactive elements */
+h1, h2, h3, h4,
+button, input, label {
+  line-height: 1.1;
+}
+
+/* A elements that don't have a class get default styles */
+a:not([class]) {
+  text-decoration-skip-ink: auto;
+  color: currentColor;
+}
+
+/* Make images easier to work with */
+img,
+picture {
+  max-inline-size: 100%;
+  display: block;
+}
+
+/* Inherit fonts for inputs and buttons */
+input, button,
+textarea, select {
+  font: inherit;
+}
+
+/** GLOBAL **/
 :root {
   --textColor: black;
   --dashboardBg: black;
   --navColor: #D04848;
   --widgetColor: #F3B95F;
-
   --slimBorderWidth: 3px;
+
+  --small: 0.8rem;
+  --normal: 1rem;
+  --large: 1.33rem;
+  --x-large: 1.77rem;
+  --xx-large: 2.4rem;
+
   --gridGapWidth: 1rem;
-  --headerFontSize: 1.5rem;
 }
 
 body {
   margin: 0;
   font-family: monospace;
   color: var(--textColor);
+  font-size: var(--normal);
 }
 
-.dashboard {
-  background: var(--dashboardBg);
-  display: grid;
-  min-block-size: 100dvh;
-  grid-template-areas:
-    "sidebar"
-    "dashboard"
-    ;
-  grid-template-rows: 8dvw 1fr;
-}
-
-aside {
-  background: var(--navColor);
-  grid-area: sidebar;
-}
-
-aside > nav {
-  height: 100%;
-}
-
-aside > nav > ul {
-  display: flex;
-  justify-content: space-around;
-  flex-direction: row;
-  height: 100%;
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
-
-.list-move {
-  transition: all 0.5s ease;
-}
-
-/*************
- * Dashboard *
- *************/
-.dashboard .main-area {
-  block-size: 100%;
-  grid-area: dashboard;
-
-  display: grid;
-  grid-template-columns: subgrid;
-}
-
-.dashboard .main-area > ul {
-  display: grid;
-  grid-template-columns: subgrid;
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
-
-.widget {
-  background-color: var(--widgetColor);
-  border: var(--slimBorderWidth) solid var(--navColor);
-  margin-block-start: var(--slimBorderWidth);
-  display: flex;
-  flex-direction: column;
-}
-
-.widget.active {
-  animation: shake 0.2s;
-}
-
-.widget header {
-  background: var(--navColor);
-  margin: 0;
-  padding: 1rem;
-  display: flex;
-  line-height: var(--headerFontSize);
-  justify-content: space-between;
-}
-
-.widget header h2 {
-  font-size: var(--headerFontSize);
+h1 {
+  font-size: var(--large);
+  --smaller: var(--normal);
   font-weight: normal;
   text-transform: uppercase;
-  margin: 0;
 }
 
-.widget .toggle-maximize {
-  display: none;
-}
-
-.widget .toggle-maximize {
-  border: 0;
-  width: 22px;
-  height: 22px;
-  cursor: pointer;
-
-  /* Maximize */
-  background: url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2222%22 height=%2222%22%3E %3Cpath d=%22M8.313 0c-.102 0-.188.144-.188.344v3.781c0 .2.086.375.188.375h5.124L4 13.938v-5.97c0-.104-.135-.187-.313-.187H.313c-.178 0-.313.083-.313.188v13.437c0 .2.086.375.188.375h12.624c.102 0 .188-.175.188-.375v-3.781c0-.2-.086-.344-.188-.344H7L17.125 7.188v6.593c0 .11.166.219.344.219h3.343c.178 0 .313-.11.313-.219V.187c0-.012-.027-.019-.031-.03-.005-.016.01-.05 0-.063-.019-.037-.038-.045-.063-.063-.008-.005-.022.005-.031 0C20.987.025 20.983 0 20.969 0H8.312z%22/%3E %3C/svg%3E") no-repeat;
-}
-
-.maximized .toggle-maximize {
-  /* Close / Unmaximize */
-  background: url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2223%22 height=%2223%22 viewBox=%220 0 23 23%22%3E %3Cpath d=%22M19.65 0a.436.436 0 0 0-.282.125l-8.031 8L3.493.282C3.336.125 3.103.109 2.962.25L.274 2.938c-.14.141-.125.375.032.531l7.843 7.844-8.021 8.021c-.157.157-.172.422-.031.563l2.687 2.656c.141.141.375.126.532-.031l8.02-8.021 8.21 8.208c.156.157.39.173.531.032l2.688-2.688c.14-.14.125-.374-.032-.531l-8.209-8.209 8.032-8.031c.156-.157.172-.39.03-.531L19.9.094a.311.311 0 0 0-.25-.093z%22/%3E %3C/svg%3E")
-}
-
-.widget-body {
-  flex-grow: 1;
-}
-
-.widget-body ul {
-  list-style-type: square;
-  padding-inline-start: 1.4rem;
-  margin: 1rem 1rem 1rem 0rem;
-  font-size: 1.2rem;
-}
-
-.widget-body img,
-.widget-body iframe {
+iframe {
   border: 0;
   inline-size: 100%;
+  block-size: 100%;
   display: block;
 }
-.widget-body iframe {
-  block-size: 100%;
+
+iframe body {
+  background: inherit;
 }
 
-.widget-body p {
-  margin: 1rem;
+small {
+  font-size: var(--smaller, var(--small));
 }
 
-.widget-body time[datetime]:hover::after, time[datetime]:active::after, time[datetime]:focus::after {
+time {
+  text-decoration: underline;
+  text-decoration-style: dotted;
+  position: relative;
+  white-space: nowrap;
+}
+
+time[datetime]:hover::after, time[datetime]:active::after, time[datetime]:focus::after {
   animation: flutter 0.3s linear;
   display: block;
 }
-.widget-body time[datetime]::after {
+
+time[datetime]::after {
   content: "also " attr( datetime );
   background-color: var(--navColor);
-  font-size: 0.8rem;
+  font-size: var(--small);
 
   position: absolute;
-  inset-block-start: 1.6rem;
+  inset-block-start: 2em;
   inset-inline-start: 0;
-  padding: 0.2rem 0.5rem;
+  padding: 0.2em 0.5em;
   z-index: 1;
 
   display: none;
 }
 
-.widget-body time {
-  text-decoration: underline;
-  text-decoration-style: dotted;
-  position: relative;
-  font-size: 1rem;
-  white-space: nowrap;
+.fluttering {
+  position: absolute; /* During transition there will be two of these */
 }
-
-.widget-body .fluid-container {
-  container-type: inline-size;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100%;
-  min-block-size: 8rem;
+.fluttering-enter-active {
+  animation: flutter 0.3s linear;
 }
-
-@container (inline-size > 0px) {
-  .fluid-typography {
-    /* FIXME: This has enough space for 11 (HH:MM:SS AM) characters
-     * as long as letter ratios are < 100 / (11 * 11.4) = ~0.8
-     * which should cover most monospace fonts */
-    font-size: 11.4cqi;
-    position: absolute; /* During transition there will be two of these */
-  }
-}
-
-.update-clock-enter-active {
-    animation: flutter 0.3s linear;
-}
-.update-clock-leave-active {
-    animation: flutterout 0.3s linear;
+.fluttering-leave-active {
+  animation: flutterout 0.3s linear;
 }
 
 @keyframes flutter {
@@ -214,261 +160,119 @@ aside > nav > ul {
   100% { opacity: 0 }
 }
 
-.widget footer {
-  background-color: var(--navColor);
-  padding-block: 0.3rem;
-  min-block-size: 1.1rem;
-  display: flex;
-  justify-content: space-between;
-}
-
-.widget footer a {
+a:any-link {
   color: var(--textColor);
-  cursor: pointer;
-  white-space: nowrap;
 }
 
-.widget footer .src::after {
+a[href^="http"]::after {
   background: url("data:image/svg+xml,%3Csvg width='800px' height='800px' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'%3E%3Cg%3E%3Cpath fill='none' d='M0 0h24v24H0z'/%3E%3Cpath d='M10 6v2H5v11h11v-5h2v6a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h6zm11-3v8h-2V6.413l-7.793 7.794-1.414-1.414L17.585 5H13V3h8z'/%3E%3C/g%3E%3C/svg%3E") no-repeat; /* https://www.svgrepo.com/svg/346833/external-link */
-}
-
-.widget footer .refresh::before {
-  background: url("data:image/svg+xml,%3Csvg width='800px' height='800px' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'%3E%3Cg%3E%3Cpath fill='none' d='M0 0h24v24H0z'/%3E%3Cpath d='M5.463 4.433A9.961 9.961 0 0 1 12 2c5.523 0 10 4.477 10 10 0 2.136-.67 4.116-1.81 5.74L17 12h3A8 8 0 0 0 6.46 6.228l-.997-1.795zm13.074 15.134A9.961 9.961 0 0 1 12 22C6.477 22 2 17.523 2 12c0-2.136.67-4.116 1.81-5.74L7 12H4a8 8 0 0 0 13.54 5.772l.997 1.795z'/%3E%3C/g%3E%3C/svg%3E") no-repeat;
-}
-
-.refreshing .refresh::before,
-.refresh:hover::before {
-  animation: rotate 3s step-end infinite;
-}
-@keyframes rotate {
-  0%, 20%, 40%, 60%, 100% { transform: rotate(0deg); }
-  1%, 21%, 41%, 61% { transform: rotate(9deg); }
-  2%, 22%, 42%, 62% { transform: rotate(18deg); }
-  3%, 23%, 43%, 63%, 98% { transform: rotate(27deg); }
-  4%, 24%, 44%, 64% { transform: rotate(36deg); }
-  5%, 25%, 45%, 65%, 97% { transform: rotate(45deg); }
-  6%, 26%, 46%, 66% { transform: rotate(54deg); }
-  7%, 27%, 47%, 67%, 96% { transform: rotate(63deg); }
-  8%, 28%, 48%, 68% { transform: rotate(72deg); }
-  9%, 29%, 49%, 69%, 95% { transform: rotate(81deg); }
-  10%, 30%, 50%, 70%, 77%, 90% { transform: rotate(90deg); }
-  11%, 31%, 51% { transform: rotate(99deg); }
-  12%, 32%, 52% { transform: rotate(108deg); }
-  13%, 33%, 53% { transform: rotate(117deg); }
-  14%, 34%, 54% { transform: rotate(126deg); }
-  15%, 35%, 55%, 75%, 79% { transform: rotate(135deg); }
-  16%, 36%, 56% { transform: rotate(144deg); }
-  17%, 37%, 57% { transform: rotate(153deg); }
-  18%, 38%, 58% { transform: rotate(162deg); }
-  19%, 39%, 59% { transform: rotate(171deg); }
-}
-
-.widget footer .refresh::before,
-.widget footer .src::after {
   background-size: contain;
   content: '';
   display: inline-block;
-  block-size: 1rem;
-  inline-size: 1rem;
-  vertical-align: bottom;
+  block-size: 1em;
+  inline-size: 1em;
+  background-position-y: 0.125em;
 }
 
-.widget footer a:hover {
-  text-decoration: underline;
-}
+@media (hover: hover) {
+  a:any-link {
+    text-decoration: none;
+  }
 
-.sidebar-item {
-    font-size: clamp(0.5rem, 0.389rem + 2.778vw, var(--headerFontSize)); /* Responsive typography, yeah */
+  a:hover, a:active {
     text-decoration: underline;
-    text-transform: uppercase;
-    cursor: pointer;
+  }
 }
 
-@media (min-width: 40rem) {
-  /* Two-column layout without sidebar */
-  .dashboard {
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-    grid-template-areas: "sidebar sidebar"
-    "dashboard dashboard";
-    column-gap: var(--gridGapWidth); /* With a top navbar, widget margins take care of the row-gap */
-  }
+/** COMPOSITION **/
 
-  .dashboard .main-area {
-    grid-template-columns: subgrid;
-    grid-column: 1 / 3;
-  }
+.with-aside {
+  display: flex;
+  flex-direction: row-reverse;
+  flex-wrap: wrap-reverse;
+  min-block-size: 100vb;
+}
 
-  .dashboard .main-area > ul {
-    grid-template-columns: subgrid;
-    grid-column: 1 / 3;
-  }
+.with-aside > .main {
+  flex: 999 0 0;
+}
 
-  .widget {
-    margin-block-start: var(--gridGapWidth);
-  }
+.with-aside > aside {
+  flex: 1 0 0;
+}
 
-  @media (min-width: 55rem) {
-    /* Three-column layout with sidebar */
-    .dashboard {
-      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr);
-      grid-template-areas: "sidebar dashboard dashboard";
-      grid-template-rows: 1fr;
-      row-gap: var(--gridGapWidth);
-    }
+.grid {
+  display: grid;
+  /* A maximum number of 4 columns with items at least 21em inline-size
+   * Inspired by https://css-tricks.com/an-auto-filling-css-grid-with-max-columns/ */
+  --gap-count: calc(var(--grid-column-count, 4) - 1);
+  --total-gap-width: calc(var(--gap-count) * var(--gutter, 1em));
+  --grid-item--max-width: calc((100% - var(--total-gap-width)) / var(--grid-column-count, 4));
+  grid-template-columns: repeat(auto-fill, minmax(max(var(--grid-min-item-size, 24em), var(--grid-item--max-width)), 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(23em, 1fr));
+  gap: var(--gutter, 1em);
+  grid-auto-rows: 1fr;
+}
 
-    .dashboard .main-area {
-      grid-column: 2 / 4;
-    }
+.nav-bar {
+  block-size: 100%;
+}
 
-    .dashboard .main-area > ul {
-      margin: 0 var(--gridGapWidth) var(--gridGapWidth) 0;
-    }
+.nav-bar > ul {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: var(--gutter, 1em);
+  margin: 0;
+  block-size: 100%;
+  align-content: space-around;
+  justify-content: space-between;
+}
 
-    .sidebar-item-container {
-      height: 100%;
-    }
+.stack {
+  display: flex;
+  flex-direction: column;
+}
 
-    .sidebar-item {
-      inline-size: 100%;
-      block-size: 100%;
-      font-size: var(--headerFontSize);
-      box-sizing: border-box;
-      display: flex;
-      align-items: center;
-    }
+.stack > * + * {
+  margin-block-start: var(--flow-space, 1em);
+}
 
-    .sidebar-item span {
-      margin-inline: 0;
-      padding-inline: 0.5rem;
-    }
+.shy-container, .shy {
+  inline-size: var(--shy-override, calc(var(--shy-additional-width, 0) + 1ch)); /* This works because the font is monospace */
+  transition: inline-size 1s ease;
+}
 
-    aside {
-      align-self: initial;
-    }
+.shy-container:is(:hover, :focus-within),
+.shy-container:is(:hover, :focus-within) .shy {
+  inline-size: var(--shy-override, 100%);
+}
 
-    aside > nav > ul {
-      flex-direction: column;
-    }
+.shy {
+  overflow: hidden;
+}
 
-    /* Maximizing is only available with sidebar */
-    .widget .toggle-maximize {
-      display: initial;
-    }
+/* UTILITIES */
 
-    .has-maximized aside {
-      display: none;
-    }
+.center-both {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
 
-    .has-maximized .main-area {
-      grid-column: 1 / 5;
-    }
+.take-all-space {
+  block-size: 100%;
+  inline-size: 100%;
+}
 
-    .has-maximized .main-area > ul {
-      grid-column: 1 / 5;
-      background: black;
-      z-index: 1;
-      margin-block-end: 0; /* Move to .maximized because we don't want it on the sidebar */
-    }
+.justify-items {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
 
-    .has-maximized .widget:not(.maximized) {
-      margin-block-start: var(--slimBorderWidth);
-    }
-
-    .has-maximized .maximized {
-      margin-block-end: 1rem; /* Moved from .main-area > ul */
-      grid-column: 2 / 5;
-      grid-row: 1 / 5; /* FIXME: Hardcoded widget count */
-    }
-
-    /* Add another column */
-    @media (min-width: 70rem) {
-      .dashboard {
-        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr);
-        grid-template-areas: "sidebar dashboard dashboard dashboard";
-      }
-
-      .dashboard .main-area {
-        grid-column: 2 / 5;
-      }
-
-      .dashboard .main-area > ul {
-        grid-column: 1 / 4;
-      }
-
-      .has-maximized .main-area {
-        grid-column: 1 / 5;
-      }
-
-      .has-maximized .main-area > ul {
-        grid-column: 1 / 5;
-      }
-
-      .has-maximized .maximized {
-        grid-column: 2 / 5;
-      }
-    }
-
-    @media (hover: hover) {
-      /* Three-column layout */
-      .dashboard {
-        grid-template-columns: minmax(2rem, 0.1fr) minmax(0, 1fr) minmax(0, 1fr);
-        transition: grid-template-columns 0.2s ease;
-      }
-
-      .aside-hover {
-        grid-template-columns: minmax(0, 0.5fr) minmax(0, 1fr) minmax(0, 1fr);
-      }
-
-      .has-maximized {
-        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr);
-      }
-
-      /* Four-column layout */
-      @media (min-width: 70rem) {
-        .dashboard {
-          grid-template-columns: minmax(2rem, 0.1fr) minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr);
-          transition: grid-template-columns 0.2s ease;
-        }
-
-        .aside-hover {
-          grid-template-columns: minmax(0, 0.5fr) minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr);
-        }
-
-        .has-maximized {
-          grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr);
-        }
-      }
-
-      .sidebar-item {
-        text-decoration: none;
-      }
-
-      .sidebar-item:hover {
-        text-decoration: underline;
-      }
-
-      /* This span is used to limit the text width while keeping the anchor at full width */
-      .sidebar-item span {
-        transition: inline-size 0.5s ease,
-        padding-inline 0.5s ease;
-        inline-size: 1ch; /* This works because the font is monospace */
-        margin-inline: auto;
-        padding-inline: 0;
-        overflow: hidden;
-      }
-
-      .aside-hover .sidebar-item span {
-        inline-size: 100%;
-        margin-inline: auto;
-        padding-inline: 0.5rem;
-      }
-
-      /* Don't underline links if UA can hover */
-      .widget footer a {
-        text-decoration: none;
-      }
-    }
-  }
+.shake {
+  animation: shake 0.2s;
 }
 
 /* Copied from https://github.com/elrumordelaluz/csshake */
@@ -512,4 +316,190 @@ aside > nav > ul {
   0%, 100% {
     transform: translate(0, 0) rotate(0);
   }
+}
+
+.smooth-move {
+  transition: all 0.5s ease;
+}
+
+/* BLOCKS */
+
+.fluid-typography-11 {
+  container-type: inline-size;
+}
+
+@container (inline-size > 0px) {
+  .fluid-typography-11 > * {
+    /* FIXME: This has enough space for 11 (HH:MM:SS AM) characters
+     * as long as letter ratios are < 100 / (11 * 11.4) = ~0.8
+     * which should cover most monospace fonts */
+    font-size: 11.4cqi;
+  }
+}
+
+.widget {
+  background-color: var(--widgetColor);
+  border: var(--slimBorderWidth) solid var(--navColor);
+}
+
+.widget > header {
+  background: var(--navColor);
+  padding: 1em;
+  line-height: var(--large);
+}
+
+.widget > .widget-body {
+  flex: 1;
+}
+
+.widget > footer {
+  background: var(--navColor);
+  padding-block: 0.3rem;
+}
+
+.dashboard {
+  padding-inline: clamp(0px, 32vi - 10rem, var(--gutter, 1em));
+  padding-block: var(--gutter, 1em);
+  margin: 0;
+  min-block-size: 100%;
+  --gutter: clamp(var(--slimBorderWidth), 1vi, 1em);
+}
+
+.with-aside {
+  background: var(--dashboardBg);
+}
+
+.sidebar {
+  background: var(--navColor);
+}
+
+.sidebar .nav-bar > ul {
+  padding: clamp(0px, 6vi - 1em, 1em);
+}
+
+.sidebar .sidebar-item {
+  text-transform: uppercase;
+}
+
+.icon-button {
+  border: 0;
+  block-size: 1em;
+  inline-size: 1em;
+  background: none;
+  background-size: contain;
+  background-repeat: no-repeat;
+  text-indent: -20rem;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.maximizable {
+  container-type: inline-size;
+}
+
+.maximizable .maximize {
+  display: none;
+}
+
+@container (inline-size < 51vi) {
+  .maximizable .maximize {
+    display: inherit;
+  }
+}
+
+.maximizable .icon-button.maximize {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2222%22 height=%2222%22%3E %3Cpath d=%22M8.313 0c-.102 0-.188.144-.188.344v3.781c0 .2.086.375.188.375h5.124L4 13.938v-5.97c0-.104-.135-.187-.313-.187H.313c-.178 0-.313.083-.313.188v13.437c0 .2.086.375.188.375h12.624c.102 0 .188-.175.188-.375v-3.781c0-.2-.086-.344-.188-.344H7L17.125 7.188v6.593c0 .11.166.219.344.219h3.343c.178 0 .313-.11.313-.219V.187c0-.012-.027-.019-.031-.03-.005-.016.01-.05 0-.063-.019-.037-.038-.045-.063-.063-.008-.005-.022.005-.031 0C20.987.025 20.983 0 20.969 0H8.312z%22/%3E %3C/svg%3E");
+}
+
+.maximizable .icon-button.unmaximize {
+  /* Close / Unmaximize */
+  background-image: url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2223%22 height=%2223%22 viewBox=%220 0 23 23%22%3E %3Cpath d=%22M19.65 0a.436.436 0 0 0-.282.125l-8.031 8L3.493.282C3.336.125 3.103.109 2.962.25L.274 2.938c-.14.141-.125.375.032.531l7.843 7.844-8.021 8.021c-.157.157-.172.422-.031.563l2.687 2.656c.141.141.375.126.532-.031l8.02-8.021 8.21 8.208c.156.157.39.173.531.032l2.688-2.688c.14-.14.125-.374-.032-.531l-8.209-8.209 8.032-8.031c.156-.157.172-.39.03-.531L19.9.094a.311.311 0 0 0-.25-.093z%22/%3E %3C/svg%3E");
+}
+
+.refresh {
+  background-image: url("data:image/svg+xml,%3Csvg width='800px' height='800px' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'%3E%3Cg%3E%3Cpath fill='none' d='M0 0h24v24H0z'/%3E%3Cpath d='M5.463 4.433A9.961 9.961 0 0 1 12 2c5.523 0 10 4.477 10 10 0 2.136-.67 4.116-1.81 5.74L17 12h3A8 8 0 0 0 6.46 6.228l-.997-1.795zm13.074 15.134A9.961 9.961 0 0 1 12 22C6.477 22 2 17.523 2 12c0-2.136.67-4.116 1.81-5.74L7 12H4a8 8 0 0 0 13.54 5.772l.997 1.795z'/%3E%3C/g%3E%3C/svg%3E");
+  block-size: 1.2em;
+  inline-size: 1.2em;
+  vertical-align: bottom;
+}
+
+.refreshing .refresh,
+.refresh:hover {
+  animation: rotate 3s step-end infinite;
+}
+
+@keyframes rotate {
+  0%, 20%, 40%, 60%, 100% { transform: rotate(0deg); }
+  1%, 21%, 41%, 61% { transform: rotate(9deg); }
+  2%, 22%, 42%, 62% { transform: rotate(18deg); }
+  3%, 23%, 43%, 63%, 98% { transform: rotate(27deg); }
+  4%, 24%, 44%, 64% { transform: rotate(36deg); }
+  5%, 25%, 45%, 65%, 97% { transform: rotate(45deg); }
+  6%, 26%, 46%, 66% { transform: rotate(54deg); }
+  7%, 27%, 47%, 67%, 96% { transform: rotate(63deg); }
+  8%, 28%, 48%, 68% { transform: rotate(72deg); }
+  9%, 29%, 49%, 69%, 95% { transform: rotate(81deg); }
+  10%, 30%, 50%, 70%, 77%, 90% { transform: rotate(90deg); }
+  11%, 31%, 51% { transform: rotate(99deg); }
+  12%, 32%, 52% { transform: rotate(108deg); }
+  13%, 33%, 53% { transform: rotate(117deg); }
+  14%, 34%, 54% { transform: rotate(126deg); }
+  15%, 35%, 55%, 75%, 79% { transform: rotate(135deg); }
+  16%, 36%, 56% { transform: rotate(144deg); }
+  17%, 37%, 57% { transform: rotate(153deg); }
+  18%, 38%, 58% { transform: rotate(162deg); }
+  19%, 39%, 59% { transform: rotate(171deg); }
+}
+
+.shy-container {
+  --shy-override: auto;
+}
+
+@media (hover: hover) and (width > 40rem) {
+  .shy-container {
+    --shy-override: unset;
+    --shy-additional-width: 2em;
+  }
+  .shy {
+    --shy-additional-width: 0;
+  }
+}
+
+/* EXCEPTIONS */
+header .icon-button {
+  font-size: var(--large);
+}
+
+.nav-bar > ul {
+  max-block-size: 100vb;
+}
+
+/* FIXME: There might be a potential composition lurking here */
+.has-maximized aside {
+  display: none;
+}
+
+.has-maximized > .main {
+  flex: 1 0 0;
+}
+.has-maximized > .spacer {
+  display: block;
+  flex: 999 0 0;
+  background: var(--navColor);
+  margin: var(--gutter, 1em);
+}
+
+.has-maximized .grid {
+  position: relative;
+  --grid-item--max-width: 21em;
+  gap: var(--slimBorderWidth);
+  padding: 0;
+}
+
+.maximized {
+  position: absolute;
+  inset-inline-start: calc(100% + var(--gutter, 1em));
+  inline-size: calc(100vi - 100% - 2 * var(--gutter, 1em));
+  block-size: 100vb;
+  margin-block: var(--gutter, 1em);
 }
